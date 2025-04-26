@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weather App</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: #ffffff;
+      padding: 30px 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      animation: fadeIn 1s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #333;
+    }
+    input {
+      padding: 12px;
+      width: 100%;
+      border: 2px solid #66a6ff;
+      border-radius: 10px;
+      font-size: 1rem;
+      margin-bottom: 15px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    input:focus {
+      border-color: #4b9eff;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #4CAF50;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    button:active {
+      transform: scale(0.97);
+    }
+    #weatherResult {
+      margin-top: 25px;
+      animation: fadeIn 0.8s ease;
+    }
+    #weatherResult h2 {
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    #weatherResult p {
+      font-size: 1rem;
+      color: #555;
+      margin: 5px 0;
+    }
+    #weatherResult img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      margin: 15px 0;
+      filter: drop-shadow(0 0 8px rgba(0,0,0,0.3));
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px 15px;
+      }
+      h1 {
+        font-size: 1.8rem;
+      }
+      input, button {
+        font-size: 0.95rem;
+      }
+      #weatherResult h2 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>☀️ Weather App</h1>
+  <input type="text" id="cityInput" placeholder="Enter city name">
+  <button onclick="getWeather()">Get Weather</button>
+  <div id="weatherResult">
+    <!-- Weather info will appear here -->
+  </div>
+</div>
+
+<script>
+  async function getWeather() {
+    const city = document.getElementById('cityInput').value.trim();
+  
+    if (city === '') {
+      document.getElementById('weatherResult').innerHTML = "<p style='color:red;'>⚠️ Please enter a city name.</p>";
+      return;
+    }
+  
+    const apiKey = '867ccf7791777b954e5de473069ba4b7';  // <-- Replace with your API key
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+  
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('City not found');
+  
+      const data = await response.json();
+      const iconCode = data.weather[0].icon;
+      const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+  
+      const weatherResult = `
+        <h2>${data.name}</h2>
+        <img src="${iconUrl}" alt="${data.weather[0].description}">
+        <p><strong>${data.weather[0].main}</strong>: ${data.weather[0].description}</p>
+        <p>🌡️ Temperature: ${data.main.temp}°C</p>
+        <p>💧 Humidity: ${data.main.humidity}%</p>
+        <p>🌬️ Wind: ${data.wind.speed} m/s</p>
+      `;
+      document.getElementById('weatherResult').innerHTML = weatherResult;
+    } catch (error) {
+      document.getElementById('weatherResult').innerHTML = `<p style='color:red;'>❌ ${error.message}</p>`;
+    }
+  }
+</script>
+
+</body>
+</html>
